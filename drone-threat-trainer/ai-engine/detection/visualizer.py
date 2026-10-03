@@ -5,7 +5,7 @@ crosshairs, persistent IDs (ID 01, ID 02), flight trajectory breadcrumbs,
 velocity vectors, status banners, and telemetry.
 """
 
-from typing import Dict, Tuple, List, Optional
+from typing import Dict, Tuple, List, Optional, Any
 import cv2
 import numpy as np
 
