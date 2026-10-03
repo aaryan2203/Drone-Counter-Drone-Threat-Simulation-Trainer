@@ -1,0 +1,518 @@
+[
+  {
+    "timestamp": 0.07,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.3294,
+    "bbox": [
+      512,
+      174,
+      564,
+      212
+    ]
+  },
+  {
+    "timestamp": 0.1,
+    "object_id": 3,
+    "class": "bird",
+    "confidence": 0.1198,
+    "bbox": [
+      510,
+      174,
+      561,
+      213
+    ]
+  },
+  {
+    "timestamp": 0.13,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.2577,
+    "bbox": [
+      508,
+      174,
+      560,
+      212
+    ]
+  },
+  {
+    "timestamp": 0.17,
+    "object_id": 3,
+    "class": "bird",
+    "confidence": 0.1251,
+    "bbox": [
+      56,
+      97,
+      88,
+      108
+    ]
+  },
+  {
+    "timestamp": 0.17,
+    "object_id": 4,
+    "class": "bird",
+    "confidence": 0.1119,
+    "bbox": [
+      56,
+      96,
+      138,
+      157
+    ]
+  },
+  {
+    "timestamp": 0.2,
+    "object_id": 1,
+    "class": "bird",
+    "confidence": 0.2331,
+    "bbox": [
+      60,
+      97,
+      141,
+      160
+    ]
+  },
+  {
+    "timestamp": 0.2,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.2157,
+    "bbox": [
+      60,
+      98,
+      92,
+      115
+    ]
+  },
+  {
+    "timestamp": 0.2,
+    "object_id": 4,
+    "class": "bird",
+    "confidence": 0.1414,
+    "bbox": [
+      108,
+      97,
+      141,
+      123
+    ]
+  },
+  {
+    "timestamp": 0.3,
+    "object_id": 1,
+    "class": "bird",
+    "confidence": 0.5055,
+    "bbox": [
+      72,
+      105,
+      152,
+      164
+    ]
+  },
+  {
+    "timestamp": 0.3,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.2064,
+    "bbox": [
+      120,
+      104,
+      152,
+      117
+    ]
+  },
+  {
+    "timestamp": 0.3,
+    "object_id": 3,
+    "class": "bird",
+    "confidence": 0.185,
+    "bbox": [
+      72,
+      104,
+      104,
+      117
+    ]
+  },
+  {
+    "timestamp": 0.33,
+    "object_id": 1,
+    "class": "bird",
+    "confidence": 0.3071,
+    "bbox": [
+      76,
+      105,
+      108,
+      116
+    ]
+  },
+  {
+    "timestamp": 0.33,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.2716,
+    "bbox": [
+      123,
+      105,
+      158,
+      127
+    ]
+  },
+  {
+    "timestamp": 0.33,
+    "object_id": 3,
+    "class": "bird",
+    "confidence": 0.258,
+    "bbox": [
+      76,
+      105,
+      154,
+      164
+    ]
+  },
+  {
+    "timestamp": 0.33,
+    "object_id": 4,
+    "class": "bird",
+    "confidence": 0.1863,
+    "bbox": [
+      503,
+      185,
+      542,
+      209
+    ]
+  },
+  {
+    "timestamp": 0.37,
+    "object_id": 1,
+    "class": "bird",
+    "confidence": 0.3467,
+    "bbox": [
+      500,
+      182,
+      539,
+      209
+    ]
+  },
+  {
+    "timestamp": 0.37,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.2932,
+    "bbox": [
+      526,
+      171,
+      545,
+      180
+    ]
+  },
+  {
+    "timestamp": 0.37,
+    "object_id": 4,
+    "class": "bird",
+    "confidence": 0.2619,
+    "bbox": [
+      80,
+      106,
+      112,
+      116
+    ]
+  },
+  {
+    "timestamp": 0.37,
+    "object_id": 5,
+    "class": "bird",
+    "confidence": 0.2541,
+    "bbox": [
+      80,
+      105,
+      160,
+      165
+    ]
+  },
+  {
+    "timestamp": 0.37,
+    "object_id": 6,
+    "class": "bird",
+    "confidence": 0.1738,
+    "bbox": [
+      495,
+      170,
+      515,
+      180
+    ]
+  },
+  {
+    "timestamp": 0.37,
+    "object_id": 7,
+    "class": "bird",
+    "confidence": 0.1222,
+    "bbox": [
+      128,
+      105,
+      161,
+      117
+    ]
+  },
+  {
+    "timestamp": 0.37,
+    "object_id": 8,
+    "class": "bird",
+    "confidence": 0.1105,
+    "bbox": [
+      80,
+      105,
+      112,
+      128
+    ]
+  },
+  {
+    "timestamp": 0.4,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.3067,
+    "bbox": [
+      524,
+      170,
+      543,
+      179
+    ]
+  },
+  {
+    "timestamp": 0.4,
+    "object_id": 3,
+    "class": "bird",
+    "confidence": 0.1538,
+    "bbox": [
+      494,
+      169,
+      539,
+      208
+    ]
+  },
+  {
+    "timestamp": 0.4,
+    "object_id": 4,
+    "class": "bird",
+    "confidence": 0.1278,
+    "bbox": [
+      493,
+      170,
+      511,
+      180
+    ]
+  },
+  {
+    "timestamp": 0.4,
+    "object_id": 5,
+    "class": "bird",
+    "confidence": 0.1136,
+    "bbox": [
+      500,
+      189,
+      537,
+      208
+    ]
+  },
+  {
+    "timestamp": 0.4,
+    "object_id": 6,
+    "class": "bird",
+    "confidence": 0.1053,
+    "bbox": [
+      528,
+      199,
+      537,
+      208
+    ]
+  },
+  {
+    "timestamp": 0.43,
+    "object_id": 1,
+    "class": "bird",
+    "confidence": 0.3147,
+    "bbox": [
+      90,
+      108,
+      168,
+      168
+    ]
+  },
+  {
+    "timestamp": 0.43,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.3007,
+    "bbox": [
+      88,
+      107,
+      119,
+      126
+    ]
+  },
+  {
+    "timestamp": 0.43,
+    "object_id": 3,
+    "class": "bird",
+    "confidence": 0.2361,
+    "bbox": [
+      137,
+      107,
+      169,
+      125
+    ]
+  },
+  {
+    "timestamp": 0.43,
+    "object_id": 4,
+    "class": "bird",
+    "confidence": 0.1955,
+    "bbox": [
+      137,
+      157,
+      168,
+      169
+    ]
+  },
+  {
+    "timestamp": 0.47,
+    "object_id": 1,
+    "class": "bird",
+    "confidence": 0.2535,
+    "bbox": [
+      92,
+      108,
+      124,
+      127
+    ]
+  },
+  {
+    "timestamp": 0.47,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.2444,
+    "bbox": [
+      141,
+      157,
+      172,
+      170
+    ]
+  },
+  {
+    "timestamp": 0.47,
+    "object_id": 3,
+    "class": "bird",
+    "confidence": 0.2356,
+    "bbox": [
+      102,
+      127,
+      160,
+      168
+    ]
+  },
+  {
+    "timestamp": 0.47,
+    "object_id": 4,
+    "class": "bird",
+    "confidence": 0.1765,
+    "bbox": [
+      140,
+      108,
+      173,
+      124
+    ]
+  },
+  {
+    "timestamp": 0.47,
+    "object_id": 5,
+    "class": "bird",
+    "confidence": 0.1295,
+    "bbox": [
+      92,
+      158,
+      121,
+      170
+    ]
+  },
+  {
+    "timestamp": 0.47,
+    "object_id": 6,
+    "class": "bird",
+    "confidence": 0.1078,
+    "bbox": [
+      489,
+      168,
+      510,
+      180
+    ]
+  },
+  {
+    "timestamp": 0.47,
+    "object_id": 7,
+    "class": "bird",
+    "confidence": 0.1061,
+    "bbox": [
+      489,
+      166,
+      540,
+      182
+    ]
+  },
+  {
+    "timestamp": 0.5,
+    "object_id": 1,
+    "class": "bird",
+    "confidence": 0.2412,
+    "bbox": [
+      96,
+      108,
+      127,
+      124
+    ]
+  },
+  {
+    "timestamp": 0.5,
+    "object_id": 2,
+    "class": "bird",
+    "confidence": 0.2167,
+    "bbox": [
+      144,
+      108,
+      177,
+      125
+    ]
+  },
+  {
+    "timestamp": 0.5,
+    "object_id": 3,
+    "class": "bird",
+    "confidence": 0.1739,
+    "bbox": [
+      96,
+      108,
+      176,
+      169
+    ]
+  },
+  {
+    "timestamp": 0.5,
+    "object_id": 4,
+    "class": "bird",
+    "confidence": 0.1318,
+    "bbox": [
+      487,
+      165,
+      536,
+      182
+    ]
+  },
+  {
+    "timestamp": 0.5,
+    "object_id": 5,
+    "class": "bird",
+    "confidence": 0.1263,
+    "bbox": [
+      145,
+      158,
+      177,
+      170
+    ]
+  }
+]

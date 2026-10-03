@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drone Threat Training Simulator - Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyan: { 400: '#22d3ee', 500: '#06b6d4' },
+            amber: { 400: '#fbbf24', 500: '#f59e0b' },
+            slate: { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 sm:p-6 selection:bg-cyan-500 selection:text-slate-950">
+  <div class="max-w-7xl mx-auto space-y-6">
+    <!-- Top HUD Header -->
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-slate-900 border border-slate-800 rounded-lg shadow-lg">
+      <div>
+        <div class="flex items-center gap-3">
+          <h1 class="text-lg font-bold tracking-wider text-cyan-400 font-mono">
+            DRONE THREAT TRAINING SIMULATOR
+          </h1>
+          <span id="wsStatusBadge" class="px-2 py-0.5 text-xs font-bold rounded-full bg-red-500/20 text-red-400 border border-red-500/40">
+            CONNECTING...
+          </span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">
+          PERCEPTION & EVALUATION CONSOLE :: NON-KINETIC DEFENSE SIMULATOR
+        </p>
+      </div>
+
+      <div class="flex items-center gap-4 mt-4 sm:mt-0">
+        <div class="text-right">
+          <span class="text-xs text-slate-400 block">TRAINEE</span>
+          <span id="traineeCodeText" class="text-sm font-bold text-white">TRN-042</span>
+        </div>
+        <div class="text-right border-l border-slate-800 pl-4">
+          <span class="text-xs text-slate-400 block">SIM TIME</span>
+          <span id="clockText" class="text-xl font-extrabold text-cyan-400">00:00</span>
+        </div>
+        <button id="sessionToggleBtn" onclick="toggleSession()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm rounded shadow-lg shadow-cyan-500/20 cursor-pointer">
+          START SCENARIO
+        </button>
+      </div>
+    </header>
+
+    <!-- Scenario Telemetry Bar -->
+    <div class="flex flex-wrap items-center justify-between px-4 py-2 bg-slate-900/60 border border-slate-800 rounded-md text-xs">
+      <div class="flex gap-4">
+        <span>SCENARIO: <strong id="scenCode" class="text-cyan-400">SCN_00127</strong></span>
+        <span>ENV: <strong id="scenEnv" class="text-slate-300">URBAN</strong></span>
+        <span>LIGHTING: <strong id="scenLight" class="text-slate-300">NIGHT</strong></span>
+        <span>DIFFICULTY: <strong id="scenDiff" class="text-amber-400">HARD</strong></span>
+      </div>
+      <div>
+        <span>ACTIVE TARGETS: <strong id="targetCountText" class="text-cyan-400">0</strong></span>
+      </div>
+    </div>
+
+    <!-- Main Workspace: Radar + Controls -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Radar View & Controls -->
+      <div class="lg:col-span-8 space-y-6">
+        <div class="flex flex-col items-center justify-center p-4 bg-slate-950 rounded-lg border border-slate-800">
+          <div class="w-full flex justify-between items-center mb-2 px-2 text-xs text-cyan-400">
+            <span>RADAR 360° SWEEP :: DEFENSE SECTOR</span>
+            <span id="radarStatusText">STANDBY</span>
+          </div>
+          <canvas id="radarCanvas" width="420" height="420" class="cursor-crosshair rounded-full shadow-inner border border-cyan-500/20"></canvas>
+          <div class="mt-3 flex gap-6 text-xs text-slate-400">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Drone Threat</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Bio / Non-Threat</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full border border-cyan-400 inline-block"></span> Locked Target</span>
+          </div>
+        </div>
+
+        <!-- Trainee Action Controls -->
+        <div class="p-5 bg-slate-900 border border-slate-800 rounded-lg space-y-4">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <div>
+              <span class="text-xs text-slate-400 block">LOCKED TARGET</span>
+              <div id="lockedTargetDisplay" class="text-sm font-bold text-slate-500 italic mt-0.5">
+                NO TARGET SELECTED (CLICK BLIP ON RADAR)
+              </div>
+            </div>
+            <span id="actionFeedback" class="text-xs text-emerald-400"></span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <button id="btnDetect" onclick="submitAction('detect')" disabled class="py-2.5 px-3 border border-cyan-500/40 hover:bg-cyan-500/20 text-cyan-300 font-bold text-xs rounded disabled:opacity-40 cursor-pointer">
+              [DETECT]
+            </button>
+            <button id="btnIdentify" onclick="submitAction('identify')" disabled class="py-2.5 px-3 border border-emerald-500/40 hover:bg-emerald-500/20 text-emerald-300 font-bold text-xs rounded disabled:opacity-40 cursor-pointer">
+              [IDENTIFY]
+            </button>
+            <button id="btnTrack" onclick="submitAction('commit_tracking')" disabled class="py-2.5 px-3 border border-blue-500/40 hover:bg-blue-500/20 text-blue-300 font-bold text-xs rounded disabled:opacity-40 cursor-pointer">
+              [TRACK]
+            </button>
+            <button id="btnRespond" onclick="openResponseProtocols()" disabled class="py-2.5 px-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded disabled:opacity-40 cursor-pointer">
+              [RESPOND]
+            </button>
+          </div>
+
+          <div id="protocolPanel" class="hidden p-3 bg-slate-950 border border-amber-500/40 rounded space-y-2">
+            <div class="flex justify-between items-center text-xs text-amber-400 font-bold">
+              <span>SELECT PREDEFINED RESPONSE PROTOCOL</span>
+              <button onclick="closeResponseProtocols()" class="text-slate-400 hover:text-white">✕</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+              <button onclick="submitAction('respond_jam_rf')" class="p-2 border border-amber-500/50 hover:bg-amber-500/20 text-amber-300 text-xs rounded">
+                4A: RF JAMMING
+              </button>
+              <button onclick="submitAction('respond_alert_command')" class="p-2 border border-cyan-500/50 hover:bg-cyan-500/20 text-cyan-300 text-xs rounded">
+                2B: ALERT COMMAND
+              </button>
+              <button onclick="submitAction('respond_log_only')" class="p-2 border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs rounded">
+                1A: LOG & MONITOR
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Target Manifest & Timeline -->
+      <div class="lg:col-span-4 space-y-6">
+        <div class="p-4 bg-slate-900 border border-slate-800 rounded-lg">
+          <h3 class="text-xs font-bold text-cyan-400 mb-3 tracking-wider">TARGET MANIFEST</h3>
+          <div id="manifestList" class="space-y-2 max-h-52 overflow-y-auto text-xs">
+            <p class="text-slate-500 italic">No targets acquired.</p>
+          </div>
+        </div>
+
+        <div class="p-4 bg-slate-900 border border-slate-800 rounded-lg">
+          <h3 class="text-xs font-bold text-cyan-400 mb-3 tracking-wider">EVENT TIMELINE</h3>
+          <div id="timelineList" class="space-y-2 max-h-64 overflow-y-auto text-xs"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- After-Action Review (AAR) Section -->
+    <div id="aarSection" class="hidden p-6 bg-slate-900 border border-cyan-500/50 rounded-lg shadow-2xl space-y-5">
+      <div class="flex justify-between items-center border-b border-cyan-500/30 pb-3">
+        <div>
+          <span class="text-xs text-cyan-400 font-bold block">AFTER-ACTION REVIEW (AAR)</span>
+          <h2 id="aarSessionTitle" class="text-xl font-bold text-white">SESSION REPORT: SES_001</h2>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-slate-400 block">OVERALL SCORE</span>
+          <span id="aarOverallScore" class="text-3xl font-extrabold text-cyan-400">85.0%</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+        <div class="p-3 bg-slate-950 rounded border border-slate-800">
+          <span class="text-xs text-slate-400 block">DETECTION (30%)</span>
+          <span id="aarDetScore" class="text-xl font-bold text-cyan-400 mt-1 block">80%</span>
+        </div>
+        <div class="p-3 bg-slate-950 rounded border border-slate-800">
+          <span class="text-xs text-slate-400 block">CLASSIFICATION (30%)</span>
+          <span id="aarClassScore" class="text-xl font-bold text-emerald-400 mt-1 block">100%</span>
+        </div>
+        <div class="p-3 bg-slate-950 rounded border border-slate-800">
+          <span class="text-xs text-slate-400 block">DECISION (30%)</span>
+          <span id="aarDecScore" class="text-xl font-bold text-amber-400 mt-1 block">100%</span>
+        </div>
+        <div class="p-3 bg-slate-950 rounded border border-slate-800">
+          <span class="text-xs text-slate-400 block">AVG LATENCY</span>
+          <span id="aarRespScore" class="text-xl font-bold text-white mt-1 block">2.4s</span>
+        </div>
+      </div>
+
+      <div id="aarSummaryNotes" class="p-3 bg-slate-950 border border-slate-800 rounded text-xs text-slate-300"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000/api";
+    const WS_URL = "ws://127.0.0.1:8000/ws/telemetry";
+
+    let currentSession = null;
+    let targets = [];
+    let selectedTarget = null;
+    let elapsedSeconds = 0;
+    let clockTimer = null;
+    let ws = null;
+
+    // Canvas Radar
+    const canvas = document.getElementById("radarCanvas");
+    const ctx = canvas.getContext("2d");
+    let sweepAngle = 0;
+
+    function renderRadar() {
+      const w = canvas.width, h = canvas.height, cx = w/2, cy = h/2, r = cx - 20;
+      ctx.clearRect(0, 0, w, h);
+
+      // Circle
+      ctx.fillStyle = "#090d14";
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Rings
+      ctx.strokeStyle = "rgba(6, 182, 212, 0.2)";
+      ctx.lineWidth = 1;
+      [0.25, 0.5, 0.75, 1.0].forEach((ratio, idx) => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * ratio, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(6, 182, 212, 0.4)";
+        ctx.font = "10px monospace";
+        ctx.fillText(`${(idx+1)*50}m`, cx + 6, cy - r * ratio + 12);
+      });
+
+      // Crosshair
+      ctx.beginPath();
+      ctx.moveTo(cx - r, cy); ctx.lineTo(cx + r, cy);
+      ctx.moveTo(cx, cy - r); ctx.lineTo(cx, cy + r);
+      ctx.stroke();
+
+      // Sweep
+      sweepAngle = (sweepAngle + 0.035) % (Math.PI * 2);
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, sweepAngle - 0.45, sweepAngle);
+      ctx.fillStyle = "rgba(6, 182, 212, 0.15)";
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(6, 182, 212, 0.8)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + r * Math.cos(sweepAngle), cy + r * Math.sin(sweepAngle));
+      ctx.stroke();
+      ctx.restore();
+
+      // Targets
+      targets.forEach(tgt => {
+        const normX = ((tgt.bbox[0] + tgt.bbox[2])/2 - 320)/320;
+        const normY = ((tgt.bbox[1] + tgt.bbox[3])/2 - 240)/240;
+        const tx = cx + normX * (r * 0.75);
+        const ty = cy + normY * (r * 0.75);
+
+        const isSelected = selectedTarget && selectedTarget.object_id === tgt.object_id;
+        const isDrone = tgt.class.toLowerCase().includes("drone");
+        const color = isDrone ? "#f59e0b" : "#10b981";
+
+        if (isSelected) {
+          ctx.strokeStyle = "#06b6d4";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(tx, ty, 13, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(tx, ty, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = isSelected ? "#06b6d4" : "#e2e8f0";
+        ctx.font = "bold 10px monospace";
+        ctx.fillText(`ID ${tgt.object_id.toString().padStart(2, "0")}`, tx + 8, ty - 4);
+      });
+
+      requestAnimationFrame(renderRadar);
+    }
+    requestAnimationFrame(renderRadar);
+
+    canvas.addEventListener("click", e => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left, clickY = e.clientY - rect.top;
+      const cx = canvas.width/2, cy = canvas.height/2, r = cx - 20;
+
+      let closest = null;
+      let minDist = 30;
+      targets.forEach(tgt => {
+        const normX = ((tgt.bbox[0] + tgt.bbox[2])/2 - 320)/320;
+        const normY = ((tgt.bbox[1] + tgt.bbox[3])/2 - 240)/240;
+        const tx = cx + normX * (r * 0.75);
+        const ty = cy + normY * (r * 0.75);
+        const dist = Math.hypot(clickX - tx, clickY - ty);
+        if (dist < minDist) { minDist = dist; closest = tgt; }
+      });
+
+      if (closest) selectTarget(closest);
+    });
+
+    function selectTarget(tgt) {
+      selectedTarget = tgt;
+      document.getElementById("lockedTargetDisplay").innerHTML = `
+        <span class="text-cyan-400 font-bold">TARGET ID ${tgt.object_id.toString().padStart(2, '0')}</span>
+        <span class="px-2 py-0.5 ml-2 text-xs rounded ${tgt.class.includes('drone') ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}">${tgt.class.toUpperCase()}</span>
+        <span class="text-xs text-slate-400 ml-1">(${Math.round(tgt.confidence*100)}% Conf)</span>
+      `;
+      document.getElementById("btnDetect").disabled = false;
+      document.getElementById("btnIdentify").disabled = false;
+      document.getElementById("btnTrack").disabled = false;
+      document.getElementById("btnRespond").disabled = false;
+      updateManifestUI();
+    }
+
+    function updateManifestUI() {
+      const list = document.getElementById("manifestList");
+      document.getElementById("targetCountText").innerText = targets.length;
+      if (targets.length === 0) {
+        list.innerHTML = `<p class="text-slate-500 italic">No targets acquired.</p>`;
+        return;
+      }
+      list.innerHTML = targets.map(t => `
+        <div onclick='selectTargetById(${t.object_id})' class="flex justify-between items-center p-2 rounded border cursor-pointer ${selectedTarget?.object_id === t.object_id ? 'bg-cyan-500/10 border-cyan-500 text-cyan-300' : 'bg-slate-950 border-slate-800 text-slate-300'}">
+          <div><strong>ID ${t.object_id.toString().padStart(2, '0')}</strong> <span class="text-slate-400 uppercase">(${t.class})</span></div>
+          <span class="px-2 py-0.5 text-xs rounded ${t.class.includes('drone') ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}">${t.class.includes('drone') ? 'THREAT' : 'BIO'}</span>
+        </div>
+      `).join("");
+    }
+
+    function selectTargetById(id) {
+      const tgt = targets.find(t => t.object_id === id);
+      if (tgt) selectTarget(tgt);
+    }
+
+    function addTimeline(type, msg) {
+      const m = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+      const s = (elapsedSeconds % 60).toString().padStart(2, '0');
+      const item = document.createElement("div");
+      item.className = "flex items-start gap-2 border-l border-cyan-500/30 pl-2 py-0.5";
+      item.innerHTML = `<span class="text-cyan-400 font-bold shrink-0">${m}:${s}</span> <span class="text-slate-300">${msg}</span>`;
+      const list = document.getElementById("timelineList");
+      list.insertBefore(item, list.firstChild);
+    }
+
+    // WebSocket link
+    function connectWS() {
+      ws = new WebSocket(WS_URL);
+      ws.onopen = () => {
+        document.getElementById("wsStatusBadge").className = "px-2 py-0.5 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+        document.getElementById("wsStatusBadge").innerText = "LIVE TELEMETRY";
+        addTimeline("SYSTEM", "WebSocket Telemetry connected");
+      };
+      ws.onmessage = e => {
+        try {
+          const d = JSON.parse(e.data);
+          if (d.event === "object_detected" || d.event === "object_tracked") {
+            const idx = targets.findIndex(t => t.object_id === d.object_id);
+            const obj = { object_id: d.object_id, class: d.class || "drone", confidence: d.confidence || 0.9, bbox: d.bbox || [200, 150, 260, 210], velocity: d.velocity || [0,0] };
+            if (idx >= 0) targets[idx] = obj;
+            else { targets.push(obj); addTimeline("RADAR", `Target ID ${d.object_id} (${obj.class.toUpperCase()}) acquired`); }
+            updateManifestUI();
+          }
+        } catch(err) {}
+      };
+      ws.onclose = () => {
+        document.getElementById("wsStatusBadge").className = "px-2 py-0.5 text-xs font-bold rounded-full bg-red-500/20 text-red-400 border border-red-500/40";
+        document.getElementById("wsStatusBadge").innerText = "OFFLINE";
+        setTimeout(connectWS, 3000);
+      };
+    }
+    connectWS();
+
+    async function toggleSession() {
+      if (!currentSession) {
+        // Start
+        try {
+          const res = await fetch(`${API_BASE}/sessions/start`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ trainee_code: "TRN-042", difficulty: "hard" })
+          });
+          const d = await res.json();
+          currentSession = d.session_code;
+          document.getElementById("sessionToggleBtn").innerText = "END SCENARIO";
+          document.getElementById("sessionToggleBtn").className = "px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold text-sm rounded cursor-pointer";
+          document.getElementById("scenCode").innerText = d.scenario_code;
+          document.getElementById("radarStatusText").innerText = "TRACKING ACTIVE";
+          document.getElementById("aarSection").classList.add("hidden");
+
+          elapsedSeconds = 0;
+          clockTimer = setInterval(() => {
+            elapsedSeconds++;
+            const m = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+            const s = (elapsedSeconds % 60).toString().padStart(2, '0');
+            document.getElementById("clockText").innerText = `${m}:${s}`;
+          }, 1000);
+
+          targets = [
+            { object_id: 1, class: "drone", confidence: 0.95, bbox: [220, 140, 280, 200], velocity: [3, 0] },
+            { object_id: 2, class: "bird", confidence: 0.72, bbox: [400, 200, 440, 230], velocity: [-1, 1] }
+          ];
+          updateManifestUI();
+          addTimeline("SESSION", `Scenario Started: ${d.scenario_code}`);
+        } catch(err) { alert("Could not reach backend at " + API_BASE); }
+      } else {
+        // End
+        try {
+          const res = await fetch(`${API_BASE}/sessions/end`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ session_code: currentSession })
+          });
+          const aar = await res.json();
+          clearInterval(clockTimer);
+
+          document.getElementById("sessionToggleBtn").innerText = "START SCENARIO";
+          document.getElementById("sessionToggleBtn").className = "px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm rounded cursor-pointer";
+          document.getElementById("radarStatusText").innerText = "STANDBY";
+
+          // Render AAR
+          document.getElementById("aarSection").classList.remove("hidden");
+          document.getElementById("aarSessionTitle").innerText = `SESSION REPORT: ${aar.session_code}`;
+          document.getElementById("aarOverallScore").innerText = `${aar.overall_score}%`;
+          document.getElementById("aarDetScore").innerText = `${aar.detection_score}%`;
+          document.getElementById("aarClassScore").innerText = `${aar.classification_score}%`;
+          document.getElementById("aarDecScore").innerText = `${aar.decision_score}%`;
+          document.getElementById("aarRespScore").innerText = `${aar.avg_response_time}s`;
+          document.getElementById("aarSummaryNotes").innerText = aar.summary_notes || "Evaluation completed successfully.";
+
+          addTimeline("AAR", `Session Completed. Overall Score: ${aar.overall_score}%`);
+          currentSession = null;
+        } catch(err) { console.error(err); }
+      }
+    }
+
+    async function submitAction(actionType) {
+      if (!currentSession || !selectedTarget) return;
+      const respTime = parseFloat((Math.random() * 2 + 1.2).toFixed(2));
+      try {
+        await fetch(`${API_BASE}/actions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_code: currentSession,
+            object_id: selectedTarget.object_id,
+            action: actionType,
+            timestamp: elapsedSeconds,
+            correct: true,
+            response_time: respTime
+          })
+        });
+        document.getElementById("actionFeedback").innerText = `Action Recorded: ${actionType.toUpperCase()}`;
+        addTimeline("ACTION", `Trainee submitted ${actionType.toUpperCase()} on ID ${selectedTarget.object_id}`);
+        closeResponseProtocols();
+      } catch(e) {}
+    }
+
+    function openResponseProtocols() { document.getElementById("protocolPanel").classList.remove("hidden"); }
+    function closeResponseProtocols() { document.getElementById("protocolPanel").classList.add("hidden"); }
+  </script>
+</body>
+</html>

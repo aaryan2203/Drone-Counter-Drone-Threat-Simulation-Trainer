@@ -1,0 +1,16 @@
+{
+  "tracking": {
+    "track_thresh": 0.25,
+    "match_thresh": 0.70,
+    "track_buffer": 30,
+    "min_hits": 2,
+    "trajectory_length": 30
+  },
+  "visualization": {
+    "render_trajectory": true,
+    "trajectory_fade": true,
+    "render_velocity_vector": true,
+    "vector_scale": 1.5,
+    "id_prefix": "ID "
+  }
+}

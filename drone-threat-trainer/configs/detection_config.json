@@ -1,0 +1,27 @@
+{
+  "model": {
+    "weights_path": "ai-engine/models/yolov8n.pt",
+    "device": "cpu",
+    "confidence_threshold": 0.25,
+    "iou_threshold": 0.45,
+    "target_classes": ["airplane", "bird", "drone"]
+  },
+  "preprocessing": {
+    "target_width": 640,
+    "target_height": 640,
+    "apply_clahe": false,
+    "preserve_aspect_ratio": true
+  },
+  "visualization": {
+    "hud_enabled": true,
+    "theme": "tactical_cyan",
+    "box_thickness": 2,
+    "font_scale": 0.5,
+    "colors": {
+      "drone": [0, 255, 255],
+      "airplane": [255, 180, 0],
+      "bird": [0, 200, 100],
+      "default": [0, 255, 0]
+    }
+  }
+}

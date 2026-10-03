@@ -1,0 +1,14 @@
+# Core AI & Computer Vision Dependencies
+opencv-python>=4.8.0
+ultralytics>=8.0.0
+torch>=2.0.0
+numpy>=1.24.0
+
+# Backend & Data Validation (For subsequent phases)
+fastapi>=0.110.0
+uvicorn>=0.28.0
+pydantic>=2.5.0
+sqlalchemy>=2.0.0
+
+# Testing
+pytest>=8.0.0
